@@ -13,8 +13,16 @@ document.addEventListener('DOMContentLoaded', function () {
     if (window.location.search) {
         // decorate all the links
         Array.from(anchorTags).forEach((a) => {
-            // make a url object out of the anchor tag's link
-            const link = new URL(a.href);
+            let link;
+            // sometimes weird stuff is in the anchor tag
+            try {
+                // make a url object out of the anchor tag's link
+                link = new URL(a.href);
+            } catch {
+                console.warn(`${a.href} is not a valid url. Not decorating ${a}`);
+                return;
+            }
+
             // update the href with the new link we've created
             a.href = getMergedParamsUrl(link, pageParamsObj);
         });
