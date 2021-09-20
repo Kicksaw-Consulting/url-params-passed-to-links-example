@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
+    console.log("URL forwarding initiating");
     // get a list of all the anchor tags (links) on this page
     const anchorTags = document.getElementsByTagName("a");
     // get a list of all the iframes on this page
@@ -34,6 +35,8 @@ document.addEventListener('DOMContentLoaded', function () {
             iframe.src = getMergedParamsUrl(link, pageParamsObj);
         })
     }
+    
+    console.log("URL forwarding complete");
 });
 
 // convert a URLSearchParams object to a normal object
