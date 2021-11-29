@@ -5,10 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // get a list of all the iframes on this page
     const iframes = document.getElementsByTagName("iframe");
 
-    // convert current page query param string to URLSearchParams object, e.g., ?key=value => URLSearchParams.key = value
-    const pageParams = new URLSearchParams(window.location.search);
-    // convert URLSearchParams objects to regular objects, e.g., {key: "value"}
-    const pageParamsObj = paramsToObject(pageParams);
+    const pageParamsObj = getPageParamsObj();
 
     // if query params (utm params) exist
     if (window.location.search) {
@@ -35,7 +32,9 @@ document.addEventListener('DOMContentLoaded', function () {
             iframe.src = getMergedParamsUrl(link, pageParamsObj);
         })
     }
-    
+
+    watchForDynamicallyRenderedAnchorTags();
+
     console.log("URL forwarding complete");
 });
 
@@ -48,6 +47,14 @@ function paramsToObject(entries) {
     return result;
 }
 
+// fetches the current page's query params and returns an object representation of them
+function getPageParamsObj() {
+    // convert current page query param string to URLSearchParams object, e.g., ?key=value => URLSearchParams.key = value
+    const pageParams = new URLSearchParams(window.location.search);
+    // convert URLSearchParams objects to regular objects, e.g., {key: "value"}
+    return paramsToObject(pageParams);
+}
+
 // combines page params with params from some passed in url and returns the new url
 function getMergedParamsUrl(url, pageParamsObj) {
     // convert the link's query param string to a URLSearchParams object
@@ -58,4 +65,37 @@ function getMergedParamsUrl(url, pageParamsObj) {
     url.search = new URLSearchParams({ ...pageParamsObj, ...linkParamsObj });
 
     return url.toString();
+}
+
+function watchForDynamicallyRenderedAnchorTags() {
+    // Select the node that will be observed for mutations
+    const targetNode = document.getElementsByTagName('body')[0];
+
+    // Options for the observer (which mutations to observe)
+    const config = { attributes: true, childList: true, subtree: true };
+
+    // Callback function to execute when mutations are observed
+    const callback = function (mutationsList, observer) {
+        // Use traditional 'for loops' for IE 11
+        for (const mutation of mutationsList) {
+            if (mutation.type === 'childList') {
+                for (const addedNode of mutation.addedNodes) {
+                    // nodeName is weird for some reason, but if this is an anchor tag, we want to modify the link
+                    if (["A"].includes(addedNode.nodeName)) {
+                        const pageParamsObj = getPageParamsObj();
+                        const link = new URL(addedNode.href);
+                        const decoratedHref = getMergedParamsUrl(link, pageParamsObj);
+                        // replace the old link with a new, param-decorated link
+                        addedNode.href = decoratedHref;
+                    }
+                }
+            }
+        }
+    };
+
+    // Create an observer instance linked to the callback function
+    const observer = new MutationObserver(callback);
+
+    // Start observing the target node for configured mutations
+    observer.observe(targetNode, config);
 }
