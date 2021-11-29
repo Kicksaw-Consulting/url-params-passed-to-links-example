@@ -1,0 +1,13 @@
+<a href="other.html">Other</a>
+
+<button id="add">Add another other</button>
+
+<script src="paramForwarder.js"></script>
+<script>
+  document.getElementById("add").onclick = function () {
+    var el = document.createElement("a");
+    el.innerHTML = "Other";
+    el.href = "other.html";
+    document.body.appendChild(el);
+  };
+</script>
