@@ -72,7 +72,7 @@ function watchForDynamicallyRenderedAnchorTags() {
     const targetNode = document.getElementsByTagName('body')[0];
 
     // Options for the observer (which mutations to observe)
-    const config = { attributes: true, childList: true, subtree: true };
+    const config = { childList: true, subtree: true };
 
     // Callback function to execute when mutations are observed
     const callback = function (mutationsList, observer) {
@@ -81,12 +81,18 @@ function watchForDynamicallyRenderedAnchorTags() {
             if (mutation.type === 'childList') {
                 for (const addedNode of mutation.addedNodes) {
                     // nodeName is weird for some reason, but if this is an anchor tag, we want to modify the link
-                    if (["A"].includes(addedNode.nodeName)) {
+                    if (addedNode.nodeName.toLowerCase() === "a") {
                         const pageParamsObj = getPageParamsObj();
                         const link = new URL(addedNode.href);
                         const decoratedHref = getMergedParamsUrl(link, pageParamsObj);
                         // replace the old link with a new, param-decorated link
                         addedNode.href = decoratedHref;
+                    } else if (addedNode.nodeName.toLowerCase() === 'iframe') {
+                        const pageParamsObj = getPageParamsObj();
+                        const link = new URL(addedNode.src);
+                        const decoratedSrc = getMergedParamsUrl(link, pageParamsObj);
+                        // replace the old link with a new, param-decorated link
+                        addedNode.src = decoratedSrc;
                     }
                 }
             }
