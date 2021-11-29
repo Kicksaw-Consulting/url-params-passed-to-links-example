@@ -1,0 +1,21 @@
+<a href="other.html">Other</a>
+
+<button id="add">Add another other</button>
+<button id="add-iframe">Add an iframe</button>
+
+<script src="paramForwarder.js"></script>
+<script>
+  document.getElementById("add").onclick = function () {
+    var el = document.createElement("a");
+    el.innerHTML = "Other";
+    el.href = "other.html";
+    document.body.appendChild(el);
+  };
+
+  document.getElementById("add-iframe").onclick = function () {
+    var el = document.createElement("iframe");
+    el.innerHTML = "iFrame 13 Max Pro";
+    el.src = "iframe.html";
+    document.body.appendChild(el);
+  };
+</script>
