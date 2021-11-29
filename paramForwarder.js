@@ -1,4 +1,13 @@
 document.addEventListener('DOMContentLoaded', function () {
+    checkDOMChange();
+});
+
+function checkDOMChange() {
+    decorateUrls();
+    setTimeout(checkDOMChange, 1000);
+}
+
+function decorateUrls() {
     console.log("URL forwarding initiating");
     // get a list of all the anchor tags (links) on this page
     const anchorTags = document.getElementsByTagName("a");
@@ -35,9 +44,9 @@ document.addEventListener('DOMContentLoaded', function () {
             iframe.src = getMergedParamsUrl(link, pageParamsObj);
         })
     }
-    
+
     console.log("URL forwarding complete");
-});
+}
 
 // convert a URLSearchParams object to a normal object
 function paramsToObject(entries) {
