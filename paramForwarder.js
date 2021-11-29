@@ -72,7 +72,7 @@ function watchForDynamicallyRenderedAnchorTags() {
     const targetNode = document.getElementsByTagName('body')[0];
 
     // Options for the observer (which mutations to observe)
-    const config = { childList: true, subtree: true };
+    const config = { attributes: true, childList: true, subtree: true };
 
     // Callback function to execute when mutations are observed
     const callback = function (mutationsList, observer) {
@@ -93,6 +93,24 @@ function watchForDynamicallyRenderedAnchorTags() {
                         const decoratedSrc = getMergedParamsUrl(link, pageParamsObj);
                         // replace the old link with a new, param-decorated link
                         addedNode.src = decoratedSrc;
+                    }
+                }
+            }
+            else if (mutation.type === 'attributes') {
+                if (mutation.attributeName === 'href') {
+                    const pageParamsObj = getPageParamsObj();
+                    const link = new URL(mutation.target.href);
+                    const decoratedHref = getMergedParamsUrl(link, pageParamsObj);
+                    if (decoratedHref !== mutation.target.href) {
+                        mutation.target.href = decoratedHref;
+                    }
+                }
+                else if (mutation.attributeName === 'src') {
+                    const pageParamsObj = getPageParamsObj();
+                    const link = new URL(mutation.target.src);
+                    const decoratedSrc = getMergedParamsUrl(link, pageParamsObj);
+                    if (decoratedSrc !== mutation.target.src) {
+                        mutation.target.src = decoratedSrc;
                     }
                 }
             }
