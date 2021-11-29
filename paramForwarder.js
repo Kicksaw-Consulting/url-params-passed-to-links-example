@@ -32,16 +32,21 @@ function decorateUrls() {
                 console.warn(`${a.href} is not a valid url. Not decorating ${a}`);
                 return;
             }
-
-            // update the href with the new link we've created
-            a.href = getMergedParamsUrl(link, pageParamsObj);
+            const decoratedUrl = getMergedParamsUrl(link, pageParamsObj);
+            // update the href with the new link we've created if different
+            if (a.href !== decoratedUrl) {
+                a.href = decoratedUrl;
+            }
         });
         // decorate all the iframes
         Array.from(iframes).forEach((iframe) => {
             // make a url object out of the iframe's source
             const link = new URL(iframe.src);
             // update the src with the new link we've created
-            iframe.src = getMergedParamsUrl(link, pageParamsObj);
+            const decoratedUrl = getMergedParamsUrl(link, pageParamsObj);
+            if (iframe.src !== decoratedUrl) {
+                iframe.src = decoratedUrl;
+            }
         })
     }
 
